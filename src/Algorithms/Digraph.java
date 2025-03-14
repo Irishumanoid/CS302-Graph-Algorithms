@@ -1,0 +1,97 @@
+package Algorithms;
+
+import java.util.List;
+
+/** A data structure containing the directed connections between nodes. */
+public class Digraph {
+  /**
+   * Contains all the end vertices for the given start vertex and the weights of those connections.
+   */
+  public record NodeVertices(String start, String[] nodeIds, double[] weights) {}
+
+  private final List<NodeVertices> nodeMap;
+
+  public Digraph(List<NodeVertices> nodeMap, boolean mustBeAcyclic) {
+    this.nodeMap = nodeMap;
+    for (NodeVertices v : nodeMap) {
+      if (v.nodeIds.length != v.weights.length) {
+        throw new IllegalArgumentException(
+            "There must be the same number of connections and connection weights.");
+      }
+    }
+    if (mustBeAcyclic && this.hasCycle()) {
+      throw new RuntimeException("Cycle found for acyclic graph");
+    }
+    if (this.hasCycle()) {
+      System.out.println("Cycle found");
+    } else {
+      System.out.println("Graph is acyclic");
+    }
+  }
+
+  public static void main(String[] args) {
+    Digraph graph =
+        new Digraph(
+            List.of(
+                new NodeVertices("A", new String[] {"B", "C"}, new double[] {2.5, 2.0}),
+                new NodeVertices("B", new String[] {}, new double[] {}),
+                new NodeVertices("C", new String[] {"A"}, new double[] {1.0})),
+            false);
+  }
+
+  /** See if current node and connections have already been visited. */
+  private boolean checkStartForCycle(int curIndex, boolean[] visited, boolean[] stack) {
+    if (stack[curIndex]) {
+      return true; // node is already in recursion stack
+    }
+    visited[curIndex] = true;
+    stack[curIndex] = true;
+    // get all connections for curIndex in nodeMap
+    String[] cons = nodeMap.get(curIndex).nodeIds();
+    for (String con : cons) {
+      int conIdx = -1;
+      for (int i = 0; i < nodeMap.size(); i++) {
+        if (nodeMap.get(i).start.equals(con)) {
+          conIdx = i;
+        }
+      }
+      return checkStartForCycle(conIdx, visited, stack);
+    }
+
+    stack[curIndex] = false;
+    return false;
+  }
+
+  /** Uses DFS traversal to check if back edges exist. */
+  public boolean hasCycle() {
+    int numVertices = nodeMap.size();
+    boolean[] visited = new boolean[numVertices];
+    boolean[] stack = new boolean[numVertices];
+    for (int i = 0; i < numVertices; i++) {
+      if (!visited[i] && checkStartForCycle(i, visited, stack)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public int getNodeIndex(int parent, String nodeId) {
+    NodeVertices node = nodeMap.get(parent);
+    String id = "";
+    for (int i = 0; i < node.nodeIds().length; i++) {
+      if (nodeId.equals(node.nodeIds()[i])) {
+        id = node.nodeIds()[i];
+      }
+    }
+    for (int i = 0; i < nodeMap.size(); i++) {
+      if (id.equals(nodeMap.get(i).start())) {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  public List<NodeVertices> getNodeMap() {
+    return nodeMap;
+  }
+}
