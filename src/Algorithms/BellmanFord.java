@@ -34,6 +34,7 @@ public class BellmanFord {
             stopEarly = true;
           } else {
             System.out.println("negative cycle exists in graph");
+            return;
           }
         }
       }
@@ -52,12 +53,12 @@ public class BellmanFord {
 
     for (int i = 1; i < shortest.size() - 1; i++) {
       checkAllNodes(shortest, nodeMap, true);
-      checkAllNodes(shortest, nodeMap, false);
       // breaking out of loop early if already optimized
       if (stopEarly) {
         break;
       }
     }
+    checkAllNodes(shortest, nodeMap, false);
     stopEarly = false;
     return shortest;
   }

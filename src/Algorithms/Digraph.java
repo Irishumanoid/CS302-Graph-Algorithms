@@ -29,16 +29,6 @@ public class Digraph {
     }
   }
 
-  public static void main(String[] args) {
-    Digraph graph =
-        new Digraph(
-            List.of(
-                new NodeVertices("A", new String[] {"B", "C"}, new double[] {2.5, 2.0}),
-                new NodeVertices("B", new String[] {}, new double[] {}),
-                new NodeVertices("C", new String[] {"A"}, new double[] {1.0})),
-            false);
-  }
-
   /** See if current node and connections have already been visited. */
   private boolean checkStartForCycle(int curIndex, boolean[] visited, boolean[] stack) {
     if (stack[curIndex]) {
@@ -55,7 +45,12 @@ public class Digraph {
           conIdx = i;
         }
       }
-      return checkStartForCycle(conIdx, visited, stack);
+      if (conIdx == -1) {
+        continue;
+      }
+      if (checkStartForCycle(conIdx, visited, stack)) {
+        return true;
+      }
     }
 
     stack[curIndex] = false;
@@ -69,12 +64,14 @@ public class Digraph {
     boolean[] stack = new boolean[numVertices];
     for (int i = 0; i < numVertices; i++) {
       if (!visited[i] && checkStartForCycle(i, visited, stack)) {
+        System.out.println("Cycle found at vertex " + i);
         return true;
       }
     }
     return false;
   }
 
+  /** Get index of one of parent's connections in initial map. */
   public int getNodeIndex(int parent, String nodeId) {
     NodeVertices node = nodeMap.get(parent);
     String id = "";
