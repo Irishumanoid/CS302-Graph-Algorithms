@@ -1,26 +1,37 @@
 import Algorithms.BellmanFord;
 import Algorithms.DAG;
 import Algorithms.Digraph;
+import Test.Graphs;
+
 import java.util.List;
 
 public class Main {
-  // runs Bellman-Ford Algorithm, DAG-based Shortest Path Algorithm, and Ford-Fulkerson Algorithm
-  // graph of a minimum of 6 nodes and minimum of 7 edges
+  /** runs Bellman-Ford Algorithm and DAG-based Shortest Path Algorithm */
   public static void main(String[] args) {
-    Digraph graph =
-        new Digraph(
-            List.of(
-                new Digraph.NodeVertices("S", new String[] {"A", "B"}, new double[] {1, 2}),
-                new Digraph.NodeVertices("A", new String[] {"C", "E"}, new double[] {1, 5}),
-                new Digraph.NodeVertices("B", new String[] {"C", "D"}, new double[] {3, 7}),
-                new Digraph.NodeVertices("C", new String[] {"F"}, new double[] {1}),
-                new Digraph.NodeVertices("D", new String[] {"C", "F"}, new double[] {9, 8}),
-                new Digraph.NodeVertices("E", new String[] {"C", "F"}, new double[] {-2, -2}),
-                new Digraph.NodeVertices("F", new String[] {}, new double[] {})),
-            true);
+    Digraph graphOne = Graphs.graphOne;
+    Digraph graphTwo = Graphs.graphTwo;
+    Digraph graphThree = Graphs.graphThree;
+    runAlgorithms(graphOne);
+    runAlgorithms(graphTwo);
+    runAlgorithms(graphThree);
+  }
+
+  private static void runAlgorithms(Digraph graph) {
     BellmanFord bf = new BellmanFord(graph.getNodeMap());
-    System.out.println(bf.bellmanFord());
+
+    System.out.println("BF output: ");
+    List<Digraph.NodeVertices> bfVertices = graph.getNodeMap();
+    List<Double> bfOutput = bf.bellmanFord();
+    for (int i = 0; i < bfVertices.size(); i++) {
+      System.out.println("distance to " + bfVertices.get(i).start() + " is " + bfOutput.get(i));
+    }
+
     DAG dag = new DAG(graph.getNodeMap());
-    System.out.println(dag.getDistances());
+    System.out.println("DAG output: ");
+    List<Digraph.NodeVertices> dagVertices = graph.getNodeMap();
+    List<Double> dagOutput = dag.getDistances();
+    for (int i = 0; i < dagVertices.size(); i++) {
+      System.out.println("distance to " + dagVertices.get(i).start() + " is " + dagOutput.get(i));
+    }
   }
 }

@@ -1,5 +1,6 @@
 package Algorithms;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** A data structure containing the directed connections between nodes. */
@@ -21,11 +22,6 @@ public class Digraph {
     }
     if (mustBeAcyclic && this.hasCycle()) {
       throw new RuntimeException("Cycle found for acyclic graph");
-    }
-    if (this.hasCycle()) {
-      System.out.println("Cycle found");
-    } else {
-      System.out.println("Graph is acyclic");
     }
   }
 
@@ -78,11 +74,11 @@ public class Digraph {
     for (int i = 0; i < node.nodeIds().length; i++) {
       if (nodeId.equals(node.nodeIds()[i])) {
         id = node.nodeIds()[i];
-      }
-    }
-    for (int i = 0; i < nodeMap.size(); i++) {
-      if (id.equals(nodeMap.get(i).start())) {
-        return i;
+        for (int j = 0; j < nodeMap.size(); j++) {
+          if (id.equals(nodeMap.get(j).start())) {
+            return j;
+          }
+        }
       }
     }
     return -1;

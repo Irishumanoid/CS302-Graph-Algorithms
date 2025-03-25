@@ -28,12 +28,11 @@ public class BellmanFord {
         int targetIndex =
             graph.getNodeIndex(numOutgoingVisited, nodeMap.get(numOutgoingVisited).nodeIds()[j]);
         if (shortest.get(numOutgoingVisited) + edgeWeight <= shortest.get(targetIndex)) {
+          System.out.println("BF found shorter path to vertex " + targetIndex + " from vertex " + numOutgoingVisited);
           if (firstCheck) {
-            System.out.println("First check update");
             shortest.set(targetIndex, shortest.get(numOutgoingVisited) + edgeWeight);
             stopEarly = true;
           } else {
-            System.out.println("negative cycle exists in graph");
             return;
           }
         }
@@ -42,6 +41,7 @@ public class BellmanFord {
     }
   }
 
+  /** Sequentially compare vertex distances and relax edges by checking shortest distance list with graph connections.*/
   public List<Double> bellmanFord() {
     List<Digraph.NodeVertices> nodeMap = graph.getNodeMap();
     String startId = nodeMap.getFirst().start();

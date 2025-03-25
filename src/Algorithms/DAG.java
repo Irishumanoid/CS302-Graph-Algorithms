@@ -2,6 +2,7 @@ package Algorithms;
 
 import java.util.*;
 
+/** Shortest path algorithm that uses topological vertex ordering to determine vertex distance calculation order. */
 public class DAG {
   private final Digraph graph;
 
@@ -9,16 +10,19 @@ public class DAG {
     this.graph = new Digraph(nodeMap, true);
   }
 
-  private int numIncomingEdges(String vertexId) {
+  protected int numIncomingEdges(String vertexId) {
     int numIncoming = 0;
     for (Digraph.NodeVertices v : graph.getNodeMap()) {
-      if (List.of(v.nodeIds()).contains(vertexId)) {
-        numIncoming++;
+      for (String nodeId : v.nodeIds()) {
+        if (nodeId.equals(vertexId)) {
+          numIncoming++;
+        }
       }
     }
     return numIncoming;
   }
 
+  /** Get topological ordering for graph vertices. */
   private List<Digraph.NodeVertices> topologicalSort() {
     List<Digraph.NodeVertices> vertices = graph.getNodeMap();
     Queue<Digraph.NodeVertices> queue = new ArrayDeque<>();
@@ -76,12 +80,12 @@ public class DAG {
     for (Digraph.NodeVertices v : vertices) {
       int startId = getOriginalVertexIndex(v.start());
       for (int i = 0; i < v.nodeIds().length; i++) {
-        // update distances list if distance to parent plus distance from parent to end is less than
-        // distance to current
         double weightBetween = v.weights()[i];
         int endId = getOriginalVertexIndex(v.nodeIds()[i]);
-        distances.set(
-            endId, Math.min(distances.get(startId) + weightBetween, distances.get(endId)));
+        if (distances.get(startId) + weightBetween < distances.get(endId)) {
+          System.out.println("DAG found shorter path to vertex " + endId + " from vertex " + startId);
+          distances.set(endId, distances.get(startId) + weightBetween);
+        }
       }
     }
 
